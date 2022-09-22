@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Bot;
 
 use App\Http\Controllers\Controller;
+use App\Models\ChatId;
 use Illuminate\Http\Request;
 use WeStacks\TeleBot\Laravel\TeleBot;
 use NotificationChannels\Telegram\TelegramUpdates;
@@ -20,17 +21,16 @@ class TeleBotController extends Controller
 
     public function sendMessage(){
       $chatId = $this->getChadId();//store in user table instead of request every time
-      $message = $this->getMessage();
-      TeleBot::sendMessage([
-          'chat_id' => $chatId,
-          'text' => $message,
-          'reply_markup' => [
-              'inline_keyboard' => [[[
-                  'text' => 'Google',
-                  'url' => 'https://google.com/'
-              ]]]
-          ]
-      ]);
+      $chatIds = ChatId::all()->pluck('chat_id');
+      foreach($chatIds as $chat_id){
+        $message = $this->getMessage();
+        TeleBot::sendMessage([
+            'chat_id' => $chat_id,
+            'text' => $message,
+
+        ]);
+      }
+
 
     }
 
@@ -48,9 +48,33 @@ class TeleBotController extends Controller
           ->get();
 
           if($updates['ok']) {
-          $chatId = $updates['result'][0]['my_chat_member']['chat']['id'];
-          }
+          $chatId = $updates['result'][0]['message']['chat']['id'];
 
+          $chatIds = [];
+          $results = $updates['result'];
+          $result_count = sizeof($updates['result']);
+          $chatId = ChatId::where('chat_id', $chatId)->first();
+
+
+          for($i = 0; $i < $result_count; $i++){
+
+            $chat_id = $updates['result'][$i]['message']['chat']['id'];
+
+            $chatId = ChatId::where('chat_id', $chat_id)->pluck('chat_id');
+           // dd($chatId);
+            if($chatId){
+                ChatId::create([
+                    'chat_id' => $chat_id
+                ]);
+            }
+            else{
+
+            }
+
+          }
+          }
+         // print_r($updates);
+          //dd(sizeof($updates['result']));
       //return response()->json(['success'=>true,"chatId"=>$chatId]);
       return $chatId;
     }

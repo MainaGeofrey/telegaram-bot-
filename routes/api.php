@@ -30,5 +30,6 @@ Route::prefix('v1')->group(function () {
     });
 });
 
+//Route::group(['prefix' => 'v1',  'middleware' => 'auth:sanctum'], function(){
 Route::post('/auth/register', [AuthController::class, 'createUser']);
 Route::post('/auth/login', [AuthController::class, 'loginUser']);
