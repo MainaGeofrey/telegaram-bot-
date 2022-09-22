@@ -26,6 +26,7 @@ Route::prefix('v1')->group(function () {
       Route::post('send-message', [TeleBotController::class, 'sendMessage'])->name('bot.send-message');
       Route::post('updates', [TeleBotController::class, 'getUpdates'])->name('bot.updates');
       Route::post('chat-id', [TeleBotController::class, 'getChadId'])->name('bot.chat-id');
+      Route::post('message', [TeleBotController::class, 'getMessage'])->name('bot.message');
 
     });
 });

@@ -7,6 +7,7 @@ use App\Models\ChatId;
 use Illuminate\Http\Request;
 use WeStacks\TeleBot\Laravel\TeleBot;
 use NotificationChannels\Telegram\TelegramUpdates;
+use App\Models\Message;
 class TeleBotController extends Controller
 {
     //
@@ -19,11 +20,11 @@ class TeleBotController extends Controller
       return response()->json(['success'=>true,"Details"=>$bot]);
     }
 
-    public function sendMessage(){
+    public function sendMessage(Request $request){
       $chatId = $this->getChadId();//store in user table instead of request every time
       $chatIds = ChatId::all()->pluck('chat_id');
       foreach($chatIds as $chat_id){
-        $message = $this->getMessage();
+        $message = $this->getMessage($request);
         TeleBot::sendMessage([
             'chat_id' => $chat_id,
             'text' => $message,
@@ -79,8 +80,18 @@ class TeleBotController extends Controller
       return $chatId;
     }
 
-    public function getMessage(){
-      $message = "Bug report\nOpen the document below";
-      return $message;
+    public function postMessage(Request $request){
+        $data = $request->all();
+        $message = $request->message;
+        Message::create([
+            'message' => $message
+        ]);
+        return $message;
+    }
+
+    public function getMessage(Request $request){
+        $message = $request->message;
+
+        return $message;
     }
 }
