@@ -21,10 +21,14 @@ class TeleBotController extends Controller
     }
 
     public function sendMessage(Request $request){
-      $chatId = $this->getChadId();//store in user table instead of request every time
-      $chatIds = ChatId::all()->pluck('chat_id');
-      foreach($chatIds as $chat_id){
-        $message = $this->getMessage($request);
+     // $chatId = $this->getChadId();//store in user table instead of request every time
+    $this->getChadId();
+      $chatIds = ChatId::all()->pluck('chat_id')->toArray();
+      $uniqueIds = array_unique($chatIds);
+
+      $text = $this->postMessage($request);
+      foreach($uniqueIds as $chat_id){
+        $message = $text;
         TeleBot::sendMessage([
             'chat_id' => $chat_id,
             'text' => $message,
