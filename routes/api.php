@@ -20,18 +20,22 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::prefix('v1')->group(function () {
-    Route::prefix('bot')->group(function () {
-      //Route::post('info', [TeleBotController::class, 'botInfo'])->name('bot.info');
-      Route::post('send-message', [TeleBotController::class, 'sendMessage'])->name('bot.send-message');
-     // Route::post('updates', [TeleBotController::class, 'getUpdates'])->name('bot.updates');
-     // Route::post('chat-id', [TeleBotController::class, 'getChadId'])->name('bot.chat-id');
-     // Route::post('message', [TeleBotController::class, 'getMessage'])->name('bot.message');
+Route::group(['middleware' => ['auth:sanctum']], function () {
+    Route::prefix('v1')->group(function () {
+        Route::prefix('bot')->group(function () {
+          //Route::post('info', [TeleBotController::class, 'botInfo'])->name('bot.info');
+          Route::post('send-message', [TeleBotController::class, 'sendMessage'])->name('bot.send-message');
+          Route::post('updates', [TeleBotController::class, 'getUpdates'])->name('bot.updates');
+          //Route::post('chat-id', [TeleBotController::class, 'getChadId'])->name('bot.chat-id');
+         // Route::post('message', [TeleBotController::class, 'getMessage'])->name('bot.message');
 
 
+        });
     });
 });
 
+
+
 //Route::group(['prefix' => 'v1',  'middleware' => 'auth:sanctum'], function(){
-Route::post('/auth/register', [AuthController::class, 'createUser']);
-Route::post('/auth/login', [AuthController::class, 'loginUser']);
+Route::post('register', [AuthController::class, 'createUser']);
+Route::post('login', [AuthController::class, 'loginUser']);
